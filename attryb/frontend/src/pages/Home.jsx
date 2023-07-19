@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Heading, Image, Select, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, FormLabel, Heading, Image, Input, Select, Text, useDisclosure } from '@chakra-ui/react'
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { getCars } from '../redux/carReducer/action'
@@ -19,8 +28,12 @@ const Home = () => {
     const dispatch = useDispatch()
     const [order, setOrder] = useState("")
     const [filter, setFilter] = useState("")
-    const [loading,setLoading]=useState(true)
-    const [flag,setFlag]=useState(false)
+    const [loading, setLoading] = useState(true)
+    const [flag, setFlag] = useState(false)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const initialRef = React.useRef(null)
+    const finalRef = React.useRef(null)
+    const [editCar, setEditCar] = useState({})
 
     useEffect(() => {
         dispatch(getCars)
@@ -33,12 +46,25 @@ const Home = () => {
         } catch (error) {
             setLoading(false)
         }
-    }, [order,filter,flag])
+    }, [order, filter, flag])
 
-    const handleDelete=(id)=>{
-        axios.delete(baseURL+`/inventory/${id}`).then((res)=>{
+    const handleDelete = (id) => {
+        axios.delete(baseURL + `/inventory/delete/${id}`).then((res) => {
             setFlag(!flag)
-        }).catch((err)=>{
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+    const handleEdit = (el) => {
+        onOpen()
+        setEditCar(el)
+    }
+
+    const handleUpdate=()=>{
+        axios.patch(baseURL + `/inventory/update/${editCar._id}`,editCar).then((res) => {
+            setFlag(!flag)
+            onClose()
+        }).catch((err) => {
             console.log(err)
         })
     }
@@ -74,9 +100,9 @@ const Home = () => {
                     <Select
                         color={"blue"}
                         placeholder="Select Colors"
-                        onChange={(e) =>{
-                            setFilter("colors"), 
-                            setOrder(e.target.value)
+                        onChange={(e) => {
+                            setFilter("colors"),
+                                setOrder(e.target.value)
                         }}
                     >
                         <option value="Red">Red</option>
@@ -101,56 +127,91 @@ const Home = () => {
             <br />
             {
                 loading
-                ?
-                <Heading textAlign={"center"}>Loading....</Heading>
-                :
-                <Box w={{ xl: "80%", lg: "80%", md: "90%", sm: "90%", base: "90%" }} m={"auto"}>
-                <Box display={'grid'} gridTemplateColumns={{ xl: "repeat(4,1fr)", lg: "repeat(4,1fr)", md: "repeat(2,1fr)", sm: "repeat(1,1fr)", base: "repeat(1,1fr)" }} gap={"20px"}>
-                    {
-                        car?.map((el, ind) => {
-                            return <>
-                                <Box key={el._id} _hover={{ backgroundColor: "#b4f6ff", cursor: "pointer" }} textAlign={"center"} p={"10px"} boxShadow={" rgba(0, 0, 0, 0.24) 0px 3px 8px;"} borderRadius={"5px"}>
-                                    <Image src={el.img} borderRadius={"5px"} />
-                                    <br />
-                                    <Text as={"b"}>{el.title}</Text>
-                                    <Text>Price: ₹ {el.price}</Text>
-                                    <Text>KMs on Odometer: {el.kms}</Text>
-                                    <Text>Mileage: {el.oemId.mileage}/ltr</Text>
-                                    <Text>Max Speed: {el.oemId.maxSpeed} kmph</Text>
-                                    <Text>Colors:</Text>
-                                    <Flex justifyContent={"space-between"}>{el.oemId.colors.map((e) => {
-                                        return <>
-                                            <Text bgColor={`${e}`} w={"50px"} h={"20px"} borderRadius={"5px"} >
-                                            </Text>
-                                        </>
-                                    })}</Flex>
-                                    <Text>Power: {el.oemId.power} HP</Text>
-                                    <Text>Major Schratches: {el.majorSchratches}</Text>
-                                    <Text>Registration Place: {el.registrationPlace}</Text>
-                                    <Text>No. of Accidents: {el.accidents}</Text>
-                                    <br />
-                                    <Flex justifyContent={"center"}>
-                                        {
-                                            isAuth
-                                                ?
-                                                <Flex justifyContent={"space-between"} gap={"50px"}>
-                                                    <Button colorScheme='blue'>Edit</Button>
-                                                    <Button onClick={()=>handleDelete(el._id)} colorScheme='red'>Delete</Button>
-                                                </Flex>
-                                                :
-                                                <Button colorScheme='blue'>View</Button>
-                                        }
-                                    </Flex>
-                                </Box>
+                    ?
+                    <Heading textAlign={"center"}>Loading....</Heading>
+                    :
+                    <Box w={{ xl: "80%", lg: "80%", md: "90%", sm: "90%", base: "90%" }} m={"auto"}>
+                        <Box display={'grid'} gridTemplateColumns={{ xl: "repeat(4,1fr)", lg: "repeat(4,1fr)", md: "repeat(2,1fr)", sm: "repeat(1,1fr)", base: "repeat(1,1fr)" }} gap={"20px"}>
+                            {
+                                car?.map((el, ind) => {
+                                    return <>
+                                        <Box key={el._id} _hover={{ backgroundColor: "#b4f6ff", cursor: "pointer" }} textAlign={"center"} p={"10px"} boxShadow={" rgba(0, 0, 0, 0.24) 0px 3px 8px;"} borderRadius={"5px"}>
+                                            <Image src={el.img} borderRadius={"5px"} />
+                                            <br />
+                                            <Text as={"b"}>{el.title}</Text>
+                                            <Text>Price: ₹ {el.price}</Text>
+                                            <Text>KMs on Odometer: {el.kms}</Text>
+                                            <Text>Mileage: {el.oemId.mileage}/ltr</Text>
+                                            <Text>Max Speed: {el.oemId.maxSpeed} kmph</Text>
+                                            <Text>Colors:</Text>
+                                            <Flex justifyContent={"space-between"}>{el.oemId.colors.map((e) => {
+                                                return <>
+                                                    <Text bgColor={`${e}`} w={"50px"} h={"20px"} borderRadius={"5px"} >
+                                                    </Text>
+                                                </>
+                                            })}</Flex>
+                                            <Text>Power: {el.oemId.power} HP</Text>
+                                            <Text>Major Schratches: {el.majorSchratches}</Text>
+                                            <Text>Registration Place: {el.registrationPlace}</Text>
+                                            <Text>No. of Accidents: {el.accidents}</Text>
+                                            <br />
+                                            <Flex justifyContent={"center"}>
+                                                {
+                                                    isAuth
+                                                        ?
+                                                        <Flex justifyContent={"space-between"} gap={"50px"}>
+                                                            <Button onClick={() => handleEdit(el)} colorScheme='blue'>Edit</Button>
+                                                            <Button onClick={() => handleDelete(el._id)} colorScheme='red'>Delete</Button>
+                                                        </Flex>
+                                                        :
+                                                        <Button colorScheme='blue'>View</Button>
+                                                }
+                                            </Flex>
+                                        </Box>
 
-                            </>
-                        })
-                    }
-                </Box>
-            </Box>
+                                    </>
+                                })
+                            }
+                        </Box>
+                    </Box>
 
             }
-            
+            {/* update modal */}
+            <Modal
+                initialFocusRef={initialRef}
+                finalFocusRef={finalRef}
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Edit Car Information</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6}>
+                        <FormLabel>Title</FormLabel>
+                        <Input value={editCar.title} onChange={(e) => setEditCar({ ...editCar, title: e.target.value })} border={"1px solid black"} type='text' placeholder='Change title' />
+                        <br />
+                        <br />
+                        <FormLabel>Price</FormLabel>
+                        <Input value={editCar.price} onChange={(e) => setEditCar({ ...editCar, price: e.target.value })} border={"1px solid black"} type='text' placeholder='Change Car Price' />
+                        <br />
+                        <br />
+                        <FormLabel>KMs on Odometer</FormLabel>
+                        <Input value={editCar.kms} onChange={(e) => setEditCar({ ...editCar, kms: e.target.value })} border={"1px solid black"} type='text' placeholder='Change KMs on Odometer' />
+                        <br />
+
+
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button onClick={handleUpdate} colorScheme='blue' mr={3}>
+                            Update
+                        </Button>
+                        <Button onClick={onClose}>Cancel</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
         </>
     )
 }

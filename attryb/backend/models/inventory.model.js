@@ -10,10 +10,10 @@ const inventorySchema=mongoose.Schema({
    prevBuyers: {type: Number,required:true },
    registrationPlace: {type: String,required:true },
    oemId: { type: mongoose.Schema.Types.ObjectId, ref: oemSpecsModel },
-   userId: { type: mongoose.Schema.Types.ObjectId, ref: userModel },
+   userId:String,
    img: { type: String, required: true },
    title: { type: String, required: true },
-   des:{type:Array,required:true},
+   des:{type:String,required:true},
    price: { type: Number,required:true },
 },{
     versionKey:false

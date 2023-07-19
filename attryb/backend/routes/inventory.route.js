@@ -1,10 +1,11 @@
 const express=require("express")
 const { inventoryModel } = require("../models/inventory.model")
+const { auth } = require("../middleware/auth.middleware")
 const inventoryRouter=express.Router()
 
 //to add inventory
 
-inventoryRouter.post("/add",(req,res)=>{
+inventoryRouter.post("/add",auth,(req,res)=>{
     try {
         const inventory=new inventoryModel(req.body)
         inventory.save()
