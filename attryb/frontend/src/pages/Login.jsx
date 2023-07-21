@@ -1,18 +1,23 @@
 import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Text, useToast } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import logo from "../assets/carlogo.webp"
 import { EmailIcon, LockIcon } from '@chakra-ui/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { userLogin } from '../redux/authReducer/action'
 
 const Login = () => {
+    const isAuth=useSelector((store)=>store.authReducer.isAuth)
     const [email,setEmail]=useState("")
     const [password,setPassword]=useState("")
     const navigate=useNavigate()
     const dispatch=useDispatch()
     const toast=useToast()
     const location=useLocation()
+    
+    useEffect(()=>{
+        console.log("isAuth :",isAuth)
+    },[isAuth])
 
     const handleLogin=()=>{
         const user={
@@ -20,16 +25,25 @@ const Login = () => {
             password
         }
         dispatch(userLogin(user)).then((res)=>{
-            toast({
-                title: 'Login Success.',
-                status: 'success',
-                duration: 3000,
-                position:"top"
-            })
-            if(location.state==null){
-                navigate("/")
+            if(res){
+                toast({
+                    title: 'Login Success.',
+                    status: 'success',
+                    duration: 3000,
+                    position:"top"
+                })
+                if(location.state==null){
+                    navigate("/")
+                }else{
+                    navigate(location.state)
+                }
             }else{
-                navigate(location.state)
+                toast({
+                    title: 'Wrong credentials.',
+                    status: 'error',
+                    duration: 3000,
+                    position:"top"
+                }) 
             }
         })
     }

@@ -12,8 +12,10 @@ import React, { useEffect, useState } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { getCars } from '../redux/carReducer/action'
 import { ChevronDownIcon } from '@chakra-ui/icons'
+import {TbFaceIdError} from "react-icons/tb";
 import axios from 'axios'
 import { baseURL } from '../baseurl'
+import Loader from '../components/Loader'
 
 const Home = () => {
     const { isLoading, isError, cars } = useSelector((store) => {
@@ -60,8 +62,8 @@ const Home = () => {
         setEditCar(el)
     }
 
-    const handleUpdate=()=>{
-        axios.patch(baseURL + `/inventory/update/${editCar._id}`,editCar).then((res) => {
+    const handleUpdate = () => {
+        axios.patch(baseURL + `/inventory/update/${editCar._id}`, editCar).then((res) => {
             setFlag(!flag)
             onClose()
         }).catch((err) => {
@@ -105,7 +107,7 @@ const Home = () => {
                                 setOrder(e.target.value)
                         }}
                     >
-                        <option value="Red">Red</option>
+                        <option value="red">Red</option>
                         <option value="blue">Blue</option>
                         <option value="green">Green</option>
                         <option value="olive">Olive</option>
@@ -128,14 +130,21 @@ const Home = () => {
             {
                 loading
                     ?
-                    <Heading textAlign={"center"}>Loading....</Heading>
+                    <Loader/>
+                    :
+                    car.length==0
+                    ?
+                    <Flex alignItems={"center"} justifyContent={"center"} h={"50vh"} flexDirection={"column"}>
+                        <TbFaceIdError size={"40px"} color='#000000'/>
+                        <Text fontSize={"25px"} fontWeight={700} textAlign={"center"}>Sorry! Car not found...</Text>
+                    </Flex>
                     :
                     <Box w={{ xl: "80%", lg: "80%", md: "90%", sm: "90%", base: "90%" }} m={"auto"}>
                         <Box display={'grid'} gridTemplateColumns={{ xl: "repeat(4,1fr)", lg: "repeat(4,1fr)", md: "repeat(2,1fr)", sm: "repeat(1,1fr)", base: "repeat(1,1fr)" }} gap={"20px"}>
                             {
                                 car?.map((el, ind) => {
-                                    return <>
-                                        <Box key={el._id} _hover={{ backgroundColor: "#b4f6ff", cursor: "pointer" }} textAlign={"center"} p={"10px"} boxShadow={" rgba(0, 0, 0, 0.24) 0px 3px 8px;"} borderRadius={"5px"}>
+                                    return (
+                                        <Box key={ind} _hover={{ backgroundColor: "#b4f6ff", cursor: "pointer" }} textAlign={"center"} p={"10px"} boxShadow={" rgba(0, 0, 0, 0.24) 0px 3px 8px;"} borderRadius={"5px"}>
                                             <Image src={el.img} borderRadius={"5px"} />
                                             <br />
                                             <Text as={"b"}>{el.title}</Text>
@@ -144,11 +153,11 @@ const Home = () => {
                                             <Text>Mileage: {el.oemId.mileage}/ltr</Text>
                                             <Text>Max Speed: {el.oemId.maxSpeed} kmph</Text>
                                             <Text>Colors:</Text>
-                                            <Flex justifyContent={"space-between"}>{el.oemId.colors.map((e) => {
-                                                return <>
-                                                    <Text bgColor={`${e}`} w={"50px"} h={"20px"} borderRadius={"5px"} >
+                                            <Flex justifyContent={"space-between"}>{el.oemId.colors.map((e,i) => {
+                                                return (
+                                                    <Text key={i} bgColor={`${e}`} w={"50px"} h={"20px"} borderRadius={"5px"} >
                                                     </Text>
-                                                </>
+                                                )
                                             })}</Flex>
                                             <Text>Power: {el.oemId.power} HP</Text>
                                             <Text>Major Schratches: {el.majorSchratches}</Text>
@@ -168,8 +177,7 @@ const Home = () => {
                                                 }
                                             </Flex>
                                         </Box>
-
-                                    </>
+                                    )
                                 })
                             }
                         </Box>

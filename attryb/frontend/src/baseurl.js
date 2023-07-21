@@ -1,1 +1,1 @@
-export const baseURL="https://attryb-backend-u4wq.onrender.com"
+export const baseURL="http://localhost:8080"
