@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Text, useToast } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Spinner, Text, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import logo from "../assets/carlogo.webp"
 import { EmailIcon, LockIcon } from '@chakra-ui/icons'
@@ -14,6 +14,7 @@ const Login = () => {
     const dispatch=useDispatch()
     const toast=useToast()
     const location=useLocation()
+    const [loader,setLoader]=useState(false)
     
     useEffect(()=>{
         console.log("isAuth :",isAuth)
@@ -24,7 +25,9 @@ const Login = () => {
             email,
             password
         }
+        setLoader(true)
         dispatch(userLogin(user)).then((res)=>{
+            setLoader(false)
             if(res){
                 toast({
                     title: 'Login Success.',
@@ -71,7 +74,9 @@ const Login = () => {
                     <Input value={password} onChange={(e)=>setPassword(e.target.value)} border={"1px solid black"} type='password' placeholder='password' />
                 </InputGroup>
                 <br />
-                <Button onClick={handleLogin} w={"100%"} colorScheme='blue'>LOGIN</Button>
+                <Button onClick={handleLogin} w={"100%"} colorScheme='blue'>{
+                    loader ?<Spinner thickness='4px' speed='0.65s' emptyColor='gray.200' color='blue.500' size='md'/> :"LOGIN"
+                }</Button>
             </Box>
             <br />
             <Text textAlign={"center"} fontSize={"18px"}>Don't have an Account? <span style={{color:"blue",cursor:"pointer"}} onClick={()=>navigate("/signup")}>Create Account</span></Text>

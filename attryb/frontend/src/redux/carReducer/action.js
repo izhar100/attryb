@@ -13,6 +13,7 @@ export const addCarfun=(car,token)=>(dispatch)=>{
         body:JSON.stringify(car)
     }).then((res)=>res.json()).then((res)=>{
         console.log(res)
+        return res;
     }).catch((err)=>{
         console.log(err)
     })

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import logo from "../assets/carlogo.webp"
 import axios from 'axios'
@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addCarfun } from '../redux/carReducer/action'
 
 const Addcar = () => {
-    const token=useSelector((store)=>store.authReducer.token)
-    const user=useSelector((store)=>store.authReducer.user)
+    const token = useSelector((store) => store.authReducer.token)
+    const user = useSelector((store) => store.authReducer.user)
     const initData = {
         kms: "",
         majorSchratches: "",
@@ -34,10 +34,12 @@ const Addcar = () => {
     }
     const [carData, setCarData] = useState(initData)
     const [oem, setOem] = useState([])
-    const [allData,setAllData]=useState([])
+    const [allData, setAllData] = useState([])
     const [search, setSearch] = useState("")
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
+    const toast = useToast()
+    const [loader, setLoader] = useState(false)
     useEffect(() => {
         axios.get(baseURL + "/spec").then((res) => {
             setOem(res.data.specs)
@@ -52,18 +54,46 @@ const Addcar = () => {
         carData.price = +carData.price
         carData.accidents = +carData.accidents
         carData.prevBuyers = +carData.prevBuyers
-        carData.userId=user._id
-        dispatch(addCarfun(carData,token))
+        carData.userId = user._id
+        if (!carData.oemId || !carData.price || !carData.userId) {
+            toast({
+                title: 'Please fill all details',
+                status: 'warning',
+                duration: 3000,
+                position: "top"
+            })
+        } else {
+            setLoader(true)
+            dispatch(addCarfun(carData, token)).then((res) => {
+                setLoader(false)
+                if (res.msg == "New Inventory Added") {
+                    toast({
+                        title: 'New inventory added!',
+                        status: 'success',
+                        duration: 3000,
+                        position: "top"
+                    })
+                } else {
+                    toast({
+                        title: 'Something went wrong!',
+                        status: 'error',
+                        duration: 3000,
+                        position: "top"
+                    })
+                }
+            })
+        }
+
     }
-    useEffect(()=>{
-        const data=allData.filter((el)=>{
-            if(el.modelName.toLowerCase().includes(search.toLowerCase())){
+    useEffect(() => {
+        const data = allData.filter((el) => {
+            if (el.modelName.toLowerCase().includes(search.toLowerCase())) {
                 return el;
             }
         })
         setOem(data)
-    },[search])
-   
+    }, [search])
+
     return (
         <>
             <br />
@@ -75,11 +105,11 @@ const Addcar = () => {
                 <br />
                 <br />
                 <Button onClick={onOpen} w={"100%"}
-                fontSize={{xl:"16px",lg:"16px",md:"14px",sm:"10px",base:"10px"}}
-                 colorScheme={carData.oemId !== "" ? 'green' : 'blue'} isDisabled={carData.oemId !== ""}>{
-                    carData.oemId !== "" ? 'Original Equipement Manufacture selected'
-                        : 'Select Original Equipement Manufacture'
-                }</Button>
+                    fontSize={{ xl: "16px", lg: "16px", md: "14px", sm: "10px", base: "10px" }}
+                    colorScheme={carData.oemId !== "" ? 'green' : 'blue'} isDisabled={carData.oemId !== ""}>{
+                        carData.oemId !== "" ? 'Original Equipement Manufacture selected'
+                            : 'Select Original Equipement Manufacture'
+                    }</Button>
                 <br />
                 <br />
 
@@ -115,7 +145,13 @@ const Addcar = () => {
                 <Input value={carData.registrationPlace} onChange={(e) => setCarData({ ...carData, registrationPlace: e.target.value })} border={"1px solid black"} type='text' placeholder='Registration Place' />
                 <br />
                 <br />
-                <Button w={"100%"} colorScheme='blue' onClick={addCar}>ADD CAR</Button>
+                <Button w={"100%"} colorScheme='blue' onClick={addCar}>{loader ? <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    emptyColor='gray.200'
+                    color='blue.500'
+                    size='md'
+                /> : "ADD CAR"}</Button>
             </Box>
             <br />
             {/* Modal for available OEM specs models */}
@@ -125,7 +161,7 @@ const Addcar = () => {
                     <ModalHeader textAlign={"center"}>Available OEM models</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Input placeholder='search model here...' onChange={(e)=>setSearch(e.target.value)} value={search} />
+                        <Input placeholder='search model here...' onChange={(e) => setSearch(e.target.value)} value={search} />
                         <br />
                         <br />
                         <Text textAlign={"center"}>Click on car to select</Text>

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormLabel, Heading, Image, Input, Select, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Flex, FormLabel, Heading, Image, Input, Select, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import {
     Modal,
     ModalOverlay,
@@ -36,6 +36,7 @@ const Home = () => {
     const initialRef = React.useRef(null)
     const finalRef = React.useRef(null)
     const [editCar, setEditCar] = useState({})
+    const toast=useToast()
 
     useEffect(() => {
         dispatch(getCars)
@@ -53,8 +54,20 @@ const Home = () => {
     const handleDelete = (id) => {
         axios.delete(baseURL + `/inventory/delete/${id}`).then((res) => {
             setFlag(!flag)
+            toast({
+                title: 'Inventory deleted',
+                status: 'warning',
+                duration: 3000,
+                position: "top"
+            })
         }).catch((err) => {
             console.log(err)
+            toast({
+                title: 'something went wrong',
+                status: 'error',
+                duration: 3000,
+                position: "top"
+            })
         })
     }
     const handleEdit = (el) => {
@@ -65,9 +78,21 @@ const Home = () => {
     const handleUpdate = () => {
         axios.patch(baseURL + `/inventory/update/${editCar._id}`, editCar).then((res) => {
             setFlag(!flag)
+            toast({
+                title: 'Inventory updated',
+                status: 'success',
+                duration: 3000,
+                position: "top"
+            })
             onClose()
         }).catch((err) => {
             console.log(err)
+            toast({
+                title: 'something went wrong!',
+                status: 'error',
+                duration: 3000,
+                position: "top"
+            })
         })
     }
 
@@ -171,9 +196,11 @@ const Home = () => {
                                             <Text>Mileage: {el.oemId.mileage}/ltr</Text>
                                             <Text>Max Speed: {el.oemId.maxSpeed} kmph</Text>
                                             <Text>Colors:</Text>
-                                            <Flex justifyContent={"space-between"}>{el.oemId.colors.map((e,i) => {
+                                            <Flex justifyContent={"space-between"}
+                                            mr={"5%"} ml={"5%"}
+                                            >{el.oemId.colors.map((e,i) => {
                                                 return (
-                                                    <Text key={i} bgColor={`${e}`} w={"50px"} h={"20px"} borderRadius={"5px"} >
+                                                    <Text key={i} bgColor={`${e}`} w={"35px"} h={"35px"} borderRadius={"50%"} >
                                                     </Text>
                                                 )
                                             })}</Flex>

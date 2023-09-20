@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Text, useToast } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Spinner, Text, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import logo from "../assets/carlogo.webp"
 import { EmailIcon, LockIcon } from '@chakra-ui/icons'
@@ -13,6 +13,7 @@ const Signup = () => {
     const [password,setPassword]=useState("")
     const toast=useToast()
     const navigate=useNavigate()
+    const [loader,setLoader]=useState(false)
 
     const handleRegister=()=>{
         const user={
@@ -20,7 +21,9 @@ const Signup = () => {
             email,
             password
         }
+        setLoader(true)
        axios.post(baseURL+"/user/register",user).then((res)=>{
+        setLoader(false)
         toast({
             title: 'Account created.',
             status: 'success',
@@ -30,6 +33,13 @@ const Signup = () => {
         navigate("/login")
         
        }).catch((err)=>{
+        setLoader(false)
+        toast({
+            title: 'Something went wrong.',
+            status: 'error',
+            duration: 3000,
+            position:"top"
+        })
         console.log(err)
        })
     }
@@ -64,7 +74,9 @@ const Signup = () => {
                     <Input value={password} onChange={(e)=>setPassword(e.target.value)} border={"1px solid black"} type='password' placeholder='password' />
                 </InputGroup>
                 <br />
-                <Button w={"100%"} onClick={handleRegister} colorScheme='blue'>REGISTER</Button>
+                <Button w={"100%"} onClick={handleRegister} colorScheme='blue'>{
+                    loader ?<Spinner thickness='4px' speed='0.65s' emptyColor='gray.200' color='blue.500' size='md'/> :"REGISTER"
+                }</Button>
             </Box>
             <br />
             <Text textAlign={"center"} fontSize={"18px"}>Already have an Account? <span style={{color:"blue",cursor:"pointer"}} onClick={()=>navigate("/login")}>Login</span></Text>
