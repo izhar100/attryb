@@ -74,31 +74,49 @@ const Home = () => {
     return (
         <>
             <br />
-            <Flex w={{ xl: "80%", lg: "80%", md: "90%", sm: "90%", base: "90%" }} m={"auto"} justifyContent={"space-between"} flexDirection={{ xl: "row", lg: "row", md: "row", sm: "column", base: "column" }}>
+            <Flex w={{ xl: "80%", lg: "80%", md: "90%", sm: "90%", base: "90%" }} m={"auto"} justifyContent={"space-between"} flexDirection={{ xl: "row", lg: "row", md: "row", sm: "column", base: "column" }}
+            gap={"10px"}
+            >
                 <Flex alignItems={"center"} gap={"20px"}>
-                    <Text as={"b"}>SORT BY PRICE</Text>
-                    <Text onClick={() => {
+                    <Text 
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}}
+                    fontWeight={700}
+                    >SORT BY PRICE</Text>
+                    <Text
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}} fontWeight={700}
+                     onClick={() => {
                         setOrder("desc")
                         setFilter("price")
                     }} _hover={{ cursor: "pointer" }} p={"5px"} pl={"10px"} pr={"10px"} bgColor={"#00ff22"} borderRadius={"10px"}>High to Low</Text>
-                    <Text onClick={() => {
+                    <Text
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}} fontWeight={700}
+                     onClick={() => {
                         setOrder("asc")
                         setFilter("price")
                     }} _hover={{ cursor: "pointer" }} p={"5px"} pl={"10px"} pr={"10px"} bgColor={"#ffc400"} borderRadius={"10px"}>Low to High</Text>
                 </Flex>
                 <Flex alignItems={"center"} gap={"20px"}>
-                    <Text as={"b"}>SORT BY MILEAGE</Text>
-                    <Text onClick={() => {
+                    <Text 
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}}
+                    fontWeight={700}
+                    >SORT BY MILEAGE</Text>
+                    <Text
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}} fontWeight={700}
+                     onClick={() => {
                         setOrder("desc")
                         setFilter("mileage")
                     }} _hover={{ cursor: "pointer" }} p={"5px"} pl={"10px"} pr={"10px"} bgColor={"#00ff22"} borderRadius={"10px"}>High to Low</Text>
-                    <Text onClick={() => {
+                    <Text 
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}} fontWeight={700}
+                    onClick={() => {
                         setOrder("asc")
                         setFilter("mileage")
                     }} _hover={{ cursor: "pointer" }} p={"5px"} pl={"10px"} pr={"10px"} bgColor={"#ffc400"} borderRadius={"10px"}>Low to High</Text>
                 </Flex>
                 <Flex alignItems={"center"} gap={"20px"}>
-                    <Text as={"b"}>SELECT COLOR</Text>
+                    <Text 
+                    fontSize={{lg:"16px",md:"14px",sm:"13px",base:"13px"}} fontWeight={700}
+                    >SELECT COLOR</Text>
                     <Select
                         color={"blue"}
                         placeholder="Select Colors"
@@ -145,7 +163,7 @@ const Home = () => {
                                 car?.map((el, ind) => {
                                     return (
                                         <Box key={ind} _hover={{ backgroundColor: "#b4f6ff", cursor: "pointer" }} textAlign={"center"} p={"10px"} boxShadow={" rgba(0, 0, 0, 0.24) 0px 3px 8px;"} borderRadius={"5px"}>
-                                            <Image src={el.img} borderRadius={"5px"} />
+                                            <Image src={el.img} borderRadius={"5px"} w={"100%"} h={"200px"} />
                                             <br />
                                             <Text as={"b"}>{el.title}</Text>
                                             <Text>Price: ₹ {el.price}</Text>

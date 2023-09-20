@@ -34,14 +34,15 @@ const Addcar = () => {
     }
     const [carData, setCarData] = useState(initData)
     const [oem, setOem] = useState([])
+    const [allData,setAllData]=useState([])
     const [search, setSearch] = useState("")
     const { isOpen, onOpen, onClose } = useDisclosure()
     const dispatch=useDispatch()
     useEffect(() => {
         axios.get(baseURL + "/spec").then((res) => {
             setOem(res.data.specs)
+            setAllData(res.data.specs)
         })
-        console.log(user._id)
     }, [])
     const handleOemSelect = (el) => {
         setCarData({ ...carData, oemId: el })
@@ -54,6 +55,15 @@ const Addcar = () => {
         carData.userId=user._id
         dispatch(addCarfun(carData,token))
     }
+    useEffect(()=>{
+        const data=allData.filter((el)=>{
+            if(el.modelName.toLowerCase().includes(search.toLowerCase())){
+                return el;
+            }
+        })
+        setOem(data)
+    },[search])
+   
     return (
         <>
             <br />
@@ -64,9 +74,11 @@ const Addcar = () => {
                 <Heading textAlign={"center"}>Add new car</Heading>
                 <br />
                 <br />
-                <Button onClick={onOpen} w={"100%"} colorScheme={carData.oemId !== "" ? 'green' : 'blue'} isDisabled={carData.oemId !== ""}>{
+                <Button onClick={onOpen} w={"100%"}
+                fontSize={{xl:"16px",lg:"16px",md:"14px",sm:"10px",base:"10px"}}
+                 colorScheme={carData.oemId !== "" ? 'green' : 'blue'} isDisabled={carData.oemId !== ""}>{
                     carData.oemId !== "" ? 'Original Equipement Manufacture selected'
-                        : 'Select original Equipement Manufacture'
+                        : 'Select Original Equipement Manufacture'
                 }</Button>
                 <br />
                 <br />
@@ -113,7 +125,7 @@ const Addcar = () => {
                     <ModalHeader textAlign={"center"}>Available OEM models</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Input placeholder='search model here...' />
+                        <Input placeholder='search model here...' onChange={(e)=>setSearch(e.target.value)} value={search} />
                         <br />
                         <br />
                         <Text textAlign={"center"}>Click on car to select</Text>
@@ -135,7 +147,7 @@ const Addcar = () => {
 
                     <ModalFooter>
                         <Button colorScheme='blue' mr={3} onClick={onClose}>
-                            Cencel
+                            Cancel
                         </Button>
                     </ModalFooter>
                 </ModalContent>
