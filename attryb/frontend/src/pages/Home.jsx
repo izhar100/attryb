@@ -208,6 +208,7 @@ const Home = () => {
                                             <Text>Major Schratches: {el.majorSchratches}</Text>
                                             <Text>Registration Place: {el.registrationPlace}</Text>
                                             <Text>No. of Accidents: {el.accidents}</Text>
+                                            <Text>No. of Previous buyers: {el.prevBuyers}</Text>
                                             <br />
                                             <Flex justifyContent={"center"}>
                                                 {
@@ -218,7 +219,7 @@ const Home = () => {
                                                             <Button onClick={() => handleDelete(el._id)} colorScheme='red'>Delete</Button>
                                                         </Flex>
                                                         :
-                                                        <Button colorScheme='blue'>View</Button>
+                                                        ""
                                                 }
                                             </Flex>
                                         </Box>
